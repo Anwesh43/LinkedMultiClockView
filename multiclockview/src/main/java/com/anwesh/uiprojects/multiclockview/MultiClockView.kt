@@ -226,4 +226,13 @@ class MultiClockView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : MultiClockView {
+            val view : MultiClockView = MultiClockView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
