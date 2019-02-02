@@ -28,6 +28,49 @@ fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
 fun Float.mirrorValue(a : Int, b : Int) : Float = (1 - scaleFactor()) * a.inverse() + scaleFactor() * b.inverse()
 fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b) * dir * scGap
 
+fun Paint.setStyle(w : Float, h : Float) {
+    strokeWidth = Math.min(w, h) / strokeFactor
+    strokeCap = Paint.Cap.ROUND
+    color = foreColor
+    style = Paint.Style.STROKE
+}
+
+fun Canvas.drawHand(size : Float, deg : Float, paint : Paint) {
+    save()
+    rotate(deg)
+    drawLine(0f, 0f, 0f, -size, paint)
+    restore()
+}
+
+fun Canvas.drawHands(size : Float, deg : Float, paint : Paint) {
+    val sw : Float = paint.strokeWidth
+    val hDegFactor : Int = 12
+    val mSizeFactor : Int = 2
+    paint.strokeWidth = 2 * sw
+    drawHand(size, deg / hDegFactor, paint)
+    paint.strokeWidth = sw
+    drawHand(size * mSizeFactor, deg, paint)
+}
+
+fun Canvas.drawMCNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = h / (nodes + 1)
+    val size : Float = gap / sizeFactor
+    paint.setStyle(w, h)
+    val sc1 : Float = scale.divideScale(0, 2)
+    val sc2 : Float = scale.divideScale(1, 2)
+    save()
+    translate(w/2, gap * (i + 1))
+    for (j in 0..(clocks - 1)) {
+        save()
+        translate(2 * size *  (j - 1) * sc1, 0f)
+        drawCircle(0f, 0f, size, paint)
+        drawHands(size / 3, 360f * sc2.divideScale(j, clocks), paint)
+        restore()
+    }
+    restore()
+}
 class MultiClockView(ctx : Context) : View(ctx) {
 
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
