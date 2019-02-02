@@ -203,4 +203,26 @@ class MultiClockView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : MultiClockView) {
+
+        private val animator : Animator = Animator(view)
+        private val mc : MultiClock = MultiClock(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            mc.draw(canvas, paint)
+            animator.animate {
+                mc.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            mc.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
