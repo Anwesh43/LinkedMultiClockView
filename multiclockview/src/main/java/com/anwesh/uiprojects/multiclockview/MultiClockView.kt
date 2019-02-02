@@ -27,6 +27,7 @@ fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
 fun Float.mirrorValue(a : Int, b : Int) : Float = (1 - scaleFactor()) * a.inverse() + scaleFactor() * b.inverse()
 fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b) * dir * scGap
+fun Int.gapForI(n : Int, gap : Float) : Float = (this - n / 2) * gap
 
 fun Paint.setStyle(w : Float, h : Float) {
     strokeWidth = Math.min(w, h) / strokeFactor
@@ -60,11 +61,12 @@ fun Canvas.drawMCNode(i : Int, scale : Float, paint : Paint) {
     paint.setStyle(w, h)
     val sc1 : Float = scale.divideScale(0, 2)
     val sc2 : Float = scale.divideScale(1, 2)
+    val xGap : Float = (w - 2 * size - paint.strokeWidth) / (clocks)
     save()
     translate(w/2, gap * (i + 1))
     for (j in 0..(clocks - 1)) {
         save()
-        translate(2 * size *  (j - 1) * sc1, 0f)
+        translate(j.gapForI(clocks, xGap * sc1),0f)
         drawCircle(0f, 0f, size, paint)
         drawHands(size / 3, 360f * sc2.divideScale(j, clocks), paint)
         restore()
